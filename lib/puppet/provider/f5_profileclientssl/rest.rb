@@ -1,4 +1,4 @@
-require 'puppet/provider/f5'
+require File.join(File.dirname(__FILE__), '../f5')
 require 'json'
 
 Puppet::Type.type(:f5_profileclientssl).provide(:rest, parent: Puppet::Provider::F5) do
@@ -17,6 +17,7 @@ Puppet::Type.type(:f5_profileclientssl).provide(:rest, parent: Puppet::Provider:
         description:                 profile['description'],
         cert:                        profile['cert'],
         key:                         profile['key'],
+        chain:                       profile['chain']
         proxy_ssl:                   profile['proxySsl'],
         proxy_ssl_passthrough:       profile['proxySslPassthrough'],
         ssl_forward_proxy:           profile['sslForwardProxy'],
@@ -25,6 +26,7 @@ Puppet::Type.type(:f5_profileclientssl).provide(:rest, parent: Puppet::Provider:
         authenticate:                profile['authenticate'],
         retain_certificate:          profile['retainCertificate'],
         authenticate_depth:          profile['authenticateDepth'],
+        partition:                   profile['partition'],
       )
     end
 

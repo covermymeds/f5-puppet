@@ -28,6 +28,10 @@ Puppet::Type.newtype(:f5_profileclientssl) do
     desc "key"
   end
 
+  newproperty(:chain) do
+    desc "chain"
+  end
+
   newproperty(:proxy_ssl, :parent => Puppet::Property::F5truthy) do
     desc "Valid values are 'enabled' or 'disabled'."
     truthy_property("Valid values are 'enabled' or 'disabled'.")
@@ -66,6 +70,10 @@ Puppet::Type.newtype(:f5_profileclientssl) do
 
   newproperty(:authenticate_depth) do
     desc "authenticate_depth."
+  end
+
+  newproperty(:partition) do
+    desc "partition to install profile to."
   end
 
 end

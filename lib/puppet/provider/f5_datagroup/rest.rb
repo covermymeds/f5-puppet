@@ -1,4 +1,4 @@
-require 'puppet/provider/f5'
+require File.join(File.dirname(__FILE__), '../f5')
 require 'json'
 
 Puppet::Type.type(:f5_datagroup).provide(:rest, parent: Puppet::Provider::F5) do
@@ -11,12 +11,19 @@ Puppet::Type.type(:f5_datagroup).provide(:rest, parent: Puppet::Provider::F5) do
     dgroups.each do |dgroup|
       full_path_uri = dgroup['fullPath'].gsub('/','~')
 
+      unless dgroup['records'].nil?
+        records = dgroup['records'].sort {|a, b| a['name'] <=> b['name']}
+      else
+        records = nil
+      end
+
+
     instances << new(
       ensure:                   :present,
       name:                     dgroup['fullPath'],
       description:              dgroup['description'],
       type:                     dgroup['type'],
-      records:                  dgroup['records'],
+      records:                  records,
     )
     end
 
@@ -32,10 +39,11 @@ Puppet::Type.type(:f5_datagroup).provide(:rest, parent: Puppet::Provider::F5) do
     end
   end
 
-  def create_message(basename, hash)
+  def create_message(basename, partition, hash)
     # Create the message by stripping :present.
     new_hash            = hash.reject { |k, _| [:ensure, :provider, Puppet::Type.metaparams].flatten.include?(k) }
     new_hash[:name]     = basename
+    new_hash[:partition]=partition
 
     return new_hash
   end
@@ -52,7 +60,7 @@ Puppet::Type.type(:f5_datagroup).provide(:rest, parent: Puppet::Provider::F5) do
 
     message = strip_nil_values(message)
     message = convert_underscores(message)
-    message = create_message(basename, message)
+    message = create_message(basename, partition, message)
     message = rename_keys(map, message)
     message = string_to_integer(message)
 
